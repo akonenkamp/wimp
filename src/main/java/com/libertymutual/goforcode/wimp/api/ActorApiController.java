@@ -16,34 +16,36 @@ import com.libertymutual.goforcode.wimp.models.Actor;
 
 import com.libertymutual.goforcode.wimp.repositories.ActorRepository;
 
-
-
-@RestController 
+@RestController
 @RequestMapping("/api/actors")
 public class ActorApiController {
 	private ActorRepository actorRepo;
-	
+
 	public ActorApiController(ActorRepository actorRepo) {
+
 		this.actorRepo = actorRepo;
-		Actor actor = new Actor();
-		actor.setFirstName("Alec");
-		actor.setLastName("Baldwin");
-		actorRepo.save(actor);
+
+		actorRepo.save(new Actor("Marky", "Mark", 1994));
+
+		actorRepo.save(new Actor("Donnie", "Wahlberg", 1989));
+
+		actorRepo.save(new Actor("Keanu", "Reeves", 1992));
+
 	}
-	
+
 	@GetMapping("{id}")
 	public Actor getOne(@PathVariable long id) {
 		return actorRepo.findOne(id);
 	}
-	
+
 	@GetMapping("")
-	public List<Actor> getAll(){
-		return actorRepo.findAll();	
+	public List<Actor> getAll() {
+		return actorRepo.findAll();
 	}
-	 
+
 	@DeleteMapping("{id}")
 	public Actor delete(@PathVariable long id) {
-		try { 
+		try {
 			Actor actor = actorRepo.findOne(id);
 			actorRepo.delete(id);
 			return actor;
@@ -51,16 +53,16 @@ public class ActorApiController {
 			return null;
 		}
 	}
-	
-@PostMapping("")
-public Actor create(@RequestBody Actor actor) {
-	return actorRepo.save(actor);
-}
 
-@PutMapping("{id}")
-public Actor update (@RequestBody Actor actor, @PathVariable long id) {
-	actor.setId(id);
-	return actorRepo.save(actor);
-}
+	@PostMapping("")
+	public Actor create(@RequestBody Actor actor) {
+		return actorRepo.save(actor);
+	}
+
+	@PutMapping("{id}")
+	public Actor update(@RequestBody Actor actor, @PathVariable long id) {
+		actor.setId(id);
+		return actorRepo.save(actor);
+	}
 
 }
