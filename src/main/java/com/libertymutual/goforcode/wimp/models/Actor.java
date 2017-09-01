@@ -1,6 +1,7 @@
 package com.libertymutual.goforcode.wimp.models;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -9,6 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@JsonIdentityInfo(
+
+generator = ObjectIdGenerators.PropertyGenerator.class,
+property="id")
 
 @Entity 
 public class Actor {
@@ -27,6 +36,7 @@ public class Actor {
 		return id;
 	}
 	
+//	@JsonIgnore
 	@ManyToMany(mappedBy="actors")
 	private List<Movie> movies;
 	

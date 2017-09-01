@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ManyToMany;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +20,16 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.libertymutual.goforcode.wimp.models.Actor;
 import com.libertymutual.goforcode.wimp.models.Movie;
 import com.libertymutual.goforcode.wimp.repositories.ActorRepository;
+import com.libertymutual.goforcode.wimp.repositories.DidntFindItException;
 import com.libertymutual.goforcode.wimp.repositories.MovieRepository;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api/movies")
+
+@Api(description="usethis toget and create movies.")
 public class MovieApiController {
 
 	private MovieRepository movieRepo;
@@ -49,10 +56,29 @@ public class MovieApiController {
 		movieRepo.save(new Movie("The Matrix", 45000, "MGM", actors));
 
 	}
+	
+	@ApiOperation(value="add an actor to cast of a movie",
+			notes="because we said so")
+	@PostMapping("{movieId}/actors")
+	public Movie associateAnActor(@PathVariable long movieId, @RequestBody Actor actor) {
+		Movie movie = movieRepo.findOne(movieId);
+		actor = actorRepo.findOne(actor.getId());
+		
+		movie.getActors().add(actor);
+//		movie.addActor(actor);
+//		movieRepo.save(movie);
+		
+		return movie;
+		
+	}
 
 	@GetMapping("{id}")
-	public Movie getOne(@PathVariable long id) {
-		return movieRepo.findOne(id);
+	public Movie getOne(@PathVariable long id) throws DidntFindItException {
+		Movie movie = movieRepo.findOne(id);
+		if (movie == null) {
+			throw new DidntFindItException();
+		}
+		return movie;
 	}
 
 	@GetMapping("")

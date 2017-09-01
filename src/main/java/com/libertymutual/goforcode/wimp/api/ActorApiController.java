@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.libertymutual.goforcode.wimp.models.Actor;
-
+import com.libertymutual.goforcode.wimp.models.ActorWithMovies;
 import com.libertymutual.goforcode.wimp.repositories.ActorRepository;
+import com.libertymutual.goforcode.wimp.repositories.DidntFindItException;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -34,8 +35,24 @@ public class ActorApiController {
 	}
 
 	@GetMapping("{id}")
-	public Actor getOne(@PathVariable long id) {
-		return actorRepo.findOne(id);
+	public Actor getOne(@PathVariable long id) throws DidntFindItException {
+		Actor actor = actorRepo.findOne(id);
+		if (actor == null)
+		{
+			throw new DidntFindItException();
+		}
+//		
+//			
+//		ActorWithMovies newActor = new ActorWithMovies();
+//		newActor.setActiveSinceYear(actor.getActiveSinceYear());
+//		newActor.setBirthDate(actor.getBirthDate());
+//		newActor.setMovies(actor.getMovies());
+//		newActor.setFirstName(actor.getFirstName());
+//		newActor.setLastName(actor.getLastName());
+//		return newActor; 
+		
+		return actor;
+
 	}
 
 	@GetMapping("")
