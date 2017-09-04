@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.libertymutual.goforcode.wimp.models.Actor;
+import com.libertymutual.goforcode.wimp.models.Movie;
 import com.libertymutual.goforcode.wimp.repositories.ActorRepository;
 import com.libertymutual.goforcode.wimp.repositories.DidntFindItException;
 
@@ -86,24 +87,69 @@ public class ActorApiControllerTest {
 		//assert
 		
 		assertThat(actor).isSameAs(actual);
-		verify(actorRepo).delete(3l);
-		verify(actorRepo).findOne(3l);
-		
+		verify(actorRepo).delete(3l);		
 	}
-	
+
 	@Test
-	public void test_that_null_is_returned_with_didntfindit_is_thrown() throws DidntFindItException 
-	{
-		//arrange 
-		when(actorRepo.findOne(3l)).thenThrow(new EmptyResultDataAccessException(0));
+	public void test_delete_returns_catch_throw_exception() {
+	
+	//arrange 
+		when(actorRepo.findOne(3L)).thenThrow(new EmptyResultDataAccessException(0));
+
+	//act
+		Actor actual = controller.delete(3l);
+	
+	//assert
+		assertThat(actual).isNull();
+		verify(actorRepo).findOne(3l);	
 		
-		//act
-		Actor actual = controller.delete(8l);
+		}
+	
+//	@Test
+//	public void test_that_null_is_returned_with_didntfindit_is_thrown() throws DidntFindItException 
+//	{
+//		//arrange 
+//		when(actorRepo.findOne(3l)).thenThrow(new EmptyResultDataAccessException(0));
+//		
+//		//act
+//		Actor actual = controller.delete(8l);
+//		
+//		//assert 
+//		assertThat(actual).isNull();
+//		verify(actorRepo).findOne(8l);
+//		
+//		
+//	}	
+	
+	
+	
+	@Test 
+	public void test_the_create_actor_and_add_toRepo() {
+		//arrange 
+		Actor actor = new Actor();
+		when(actorRepo.save(actor)).thenReturn(actor);
+		
+		//act 
+		Actor actualActor = controller.create(actor);
 		
 		//assert 
-		assertThat(actual).isNull();
-		verify(actorRepo).findOne(8l);
-		
-		
+		assertThat(actor).isSameAs(actualActor);
+		verify(actorRepo).save(actor);
 	}
+	
+	@Test 
+	public void test_that_actor_updates_and_save_to_movie_repo() {
+		//arrange 
+		Actor actor = new Actor();
+		when(actorRepo.save(actor)).thenReturn(actor);
+		
+		
+		//act
+		Actor actualActor = controller.update(actor, 4L);
+		
+		//assert
+		assertThat(actualActor.getId()).isSameAs(actor.getId());
+		verify(actorRepo).save(actor);
+	}
+	
 }

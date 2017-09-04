@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.libertymutual.goforcode.wimp.models.Actor;
 import com.libertymutual.goforcode.wimp.models.Movie;
 import com.libertymutual.goforcode.wimp.repositories.ActorRepository;
 import com.libertymutual.goforcode.wimp.repositories.DidntFindItException;
@@ -83,12 +85,85 @@ public class MovieApiControllerTest {
 		//act 
 		Movie actual = controls.delete(3l);
 		
+		
 		//assert
 		assertThat(movie).isSameAs(actual);
 		verify(movieRepo).delete(3l);
-		verify(movieRepo).findOne(3l);
 		
 	}
 	
+	@Test
+	public void test_delete_returns_catch_throw_exception() {
+	
+	//arrange 
+		when(movieRepo.findOne(3L)).thenThrow(new EmptyResultDataAccessException(0));
+
+	//act
+		Movie actual = controls.delete(3l);
+	
+	//assert
+		assertThat(actual).isNull();
+		verify(movieRepo).findOne(3l);	
+		
+		}
+
+	
+	@Test
+	
+	public void test_the_create_a_movie_and_add_to_repo() {
+		//arrange
+		Movie movie = new Movie();
+		when(movieRepo.save(movie)).thenReturn(movie);
+		//act
+		Movie actualMovie = controls.create(movie);
+		
+		//assert 
+		assertThat(movie).isSameAs(actualMovie);
+		verify(movieRepo).save(movie);
+	}
+
+	
+	
+	@Test
+	public void test_associate_an_actor_add_an_actor_to_a_movie() {
+	
+		//arrange 
+		Movie movie = new Movie();
+		when(movieRepo.findOne(3L)).thenReturn(movie);
+		Actor actor = new Actor();
+//		actor.setId(2L);
+		when(actorRepo.findOne(2L)).thenReturn(actor);
+		
+	//act
+		Actor actualActor = actorRepo.findOne(2L);
+//		when(actorRepo.findOne(2L)).thenReturn(newActor);
+		Movie actualMovie = controls.associateAnActor(3L, actualActor);
+
+		
+	//assert
+		assertThat(actualMovie).isSameAs(movie);
+		assertThat(actualActor).isSameAs(actualActor);
+		verify(movieRepo).save(movie);
+
+	}
+	
+	@Test
+	public void test_update_movies_saves_to_movie_repo() {
+		//arrange 
+		 Movie movie = new Movie();
+		 when(movieRepo.save(movie)).thenReturn(movie);
+		
+		//act
+		 Movie actualMovie = controls.update(movie, 3L);
+		
+		//assert
+		 assertThat(actualMovie.getId()).isSameAs(movie.getId());
+		 verify(movieRepo).save(movie);
+	}
 	
 }
+
+
+
+
+

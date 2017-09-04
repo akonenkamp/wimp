@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/api/movies")
 
-@Api(description="usethis toget and create movies.")
+@Api(description = "usethis toget and create movies.")
 public class MovieApiController {
 
 	private MovieRepository movieRepo;
@@ -56,21 +56,19 @@ public class MovieApiController {
 		movieRepo.save(new Movie("The Matrix", 45000, "MGM", actors));
 
 	}
-	
-	@ApiOperation(value="add an actor to cast of a movie",
-			notes="because we said so")
+
+	@ApiOperation(value = "add an actor to cast of a movie", notes = "because we said so")
 	@PostMapping("{movieId}/actors")
 	public Movie associateAnActor(@PathVariable long movieId, @RequestBody Actor actor) {
-		Movie movie = movieRepo.findOne(movieId);
 		actor = actorRepo.findOne(actor.getId());
-		
-		movie.getActors().add(actor);
-//		movie.addActor(actor);
-//		movieRepo.save(movie);
-		
+		Movie movie = movieRepo.findOne(movieId);
+		movie.addActor(actor);
+		movieRepo.save(movie);
+
 		return movie;
-		
+
 	}
+
 
 	@GetMapping("{id}")
 	public Movie getOne(@PathVariable long id) throws DidntFindItException {
